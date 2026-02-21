@@ -135,6 +135,7 @@ export const HomeScreen: FC<AppStackScreenProps<"Home">> = function HomeScreen({
           </Text>
         </View>
         <TextField
+          testID="home-search-input"
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Search users..."
@@ -144,6 +145,7 @@ export const HomeScreen: FC<AppStackScreenProps<"Home">> = function HomeScreen({
         />
       </View>
       <ListItemList
+        testID="home-users-list"
         data={users}
         renderItem={renderItem}
         keyExtractor={keyExtractor}

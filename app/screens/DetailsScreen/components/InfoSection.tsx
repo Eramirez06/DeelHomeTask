@@ -24,12 +24,21 @@ export interface InfoSectionProps {
    * Initially expanded state
    */
   defaultExpanded?: boolean
+  /**
+   * Test id for the section toggle
+   */
+  testID?: string
 }
 
 /**
  * Animated accordion section component for displaying collapsible information
  */
-export const InfoSection: FC<InfoSectionProps> = ({ title, children, defaultExpanded = false }) => {
+export const InfoSection: FC<InfoSectionProps> = ({
+  title,
+  children,
+  defaultExpanded = false,
+  testID,
+}) => {
   const { themed } = useAppTheme()
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
   const [measuredHeight, setMeasuredHeight] = useState(0)
@@ -68,6 +77,7 @@ export const InfoSection: FC<InfoSectionProps> = ({ title, children, defaultExpa
   return (
     <View style={themed($container)}>
       <Pressable
+        testID={testID}
         style={({ pressed }) => [themed($header), pressed && themed($pressed)]}
         onPress={toggleExpanded}
       >

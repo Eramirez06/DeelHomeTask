@@ -16,6 +16,7 @@ export const UserItem: FC<UserItemProps> = memo(function UserItem({ user, onPres
 
   return (
     <Pressable
+      testID={`user-card-${user.id}`}
       style={({ pressed }) => [themed($userItemContainer), pressed && themed($pressed)]}
       onPress={onPress}
     >

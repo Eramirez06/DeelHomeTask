@@ -73,8 +73,8 @@ export const DetailsScreen: FC<AppStackScreenProps<"Details">> = function Detail
         </View>
 
         {/* Contact / Location */}
-        <InfoSection title="Contact / Location">
-          <InfoRow label="Email" value={user.email} />
+        <InfoSection title="Contact / Location" testID="details-section-contact-toggle">
+          <InfoRow label="Email" value={user.email} testID="details-row-email" />
           <InfoRow label="Phone" value={user.phone} />
           <InfoRow label="City" value={user.address.city} />
           <InfoRow label="Country" value={user.address.country} />

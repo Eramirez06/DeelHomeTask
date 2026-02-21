@@ -14,16 +14,20 @@ export interface InfoRowProps {
    * Value to display
    */
   value: string
+  /**
+   * Optional test id for e2e checks
+   */
+  testID?: string
 }
 
 /**
  * Component to display a labeled information row
  */
-export const InfoRow: FC<InfoRowProps> = ({ label, value }) => {
+export const InfoRow: FC<InfoRowProps> = ({ label, value, testID }) => {
   const { themed } = useAppTheme()
 
   return (
-    <View style={themed($container)}>
+    <View testID={testID} style={themed($container)}>
       <Text style={themed($label)} size="sm">
         {label}
       </Text>
