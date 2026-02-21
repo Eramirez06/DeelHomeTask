@@ -1,17 +1,8 @@
-import { FC, memo, useCallback } from "react"
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  ImageStyle,
-  Pressable,
-  RefreshControl,
-  TextStyle,
-  View,
-  ViewStyle,
-} from "react-native"
+import { FC, useCallback } from "react"
+import { ActivityIndicator, RefreshControl, TextStyle, View, ViewStyle } from "react-native"
 
 import { ListEmptyState } from "@/components/ListEmptyState"
+import { ListItemList } from "@/components/ListItem"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
@@ -26,36 +17,9 @@ import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 import { useUsers } from "@/utils/useUsers"
 
+import { UserItem } from "./components/UserItem"
+
 const ITEM_HEIGHT = 100
-
-const UserItem = memo<{ user: User; onPress: () => void }>(function UserItem({ user, onPress }) {
-  const { themed } = useAppTheme()
-
-  return (
-    <Pressable
-      style={({ pressed }) => [themed($userItemContainer), pressed && themed($pressed)]}
-      onPress={onPress}
-    >
-      <Image source={{ uri: user.image }} style={$userAvatar} />
-      <View style={$userInfo}>
-        <Text style={themed($userName)} weight="semiBold" numberOfLines={1} ellipsizeMode="tail">
-          {user.firstName} {user.lastName}
-        </Text>
-        <Text style={themed($userEmail)} size="sm" numberOfLines={1} ellipsizeMode="tail">
-          {user.email}
-        </Text>
-        <View style={$userMetaRow}>
-          <Text style={themed($userMeta)} size="xs" numberOfLines={1} ellipsizeMode="tail">
-            {user.role} • {user.age} years old
-          </Text>
-          <Text style={themed($userMeta)} size="xs" numberOfLines={1} ellipsizeMode="tail">
-            {user.company.department}
-          </Text>
-        </View>
-      </View>
-    </Pressable>
-  )
-})
 
 export const HomeScreen: FC<AppStackScreenProps<"Home">> = function HomeScreen({ navigation }) {
   const { themed, theme } = useAppTheme()
@@ -121,6 +85,18 @@ export const HomeScreen: FC<AppStackScreenProps<"Home">> = function HomeScreen({
     )
   }, [isLoadingMore, themed, theme.colors.tint])
 
+  const renderRefreshControl = useCallback(
+    () => (
+      <RefreshControl
+        refreshing={isRefreshing}
+        onRefresh={refresh}
+        tintColor={theme.colors.tint}
+        colors={[theme.colors.tint]}
+      />
+    ),
+    [isRefreshing, refresh, theme.colors.tint],
+  )
+
   const renderEmpty = useCallback(() => {
     if (isLoading) return null
 
@@ -167,27 +143,15 @@ export const HomeScreen: FC<AppStackScreenProps<"Home">> = function HomeScreen({
           RightAccessory={renderSearchSpinner}
         />
       </View>
-      <FlatList
+      <ListItemList
         data={users}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         getItemLayout={getItemLayout}
         onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
         ListEmptyComponent={renderEmpty}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refresh}
-            tintColor={theme.colors.tint}
-            colors={[theme.colors.tint]}
-          />
-        }
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
-        windowSize={5}
-        removeClippedSubviews={true}
+        refreshControl={renderRefreshControl()}
         contentContainerStyle={themed($listContent)}
       />
     </Screen>
@@ -232,57 +196,6 @@ const $searchIndicator: ViewStyle = {
 const $listContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.md,
   paddingTop: spacing.sm,
-})
-
-const $userItemContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  flexDirection: "row",
-  padding: spacing.md,
-  marginBottom: spacing.sm,
-  backgroundColor: colors.palette.neutral100,
-  borderRadius: 12,
-  height: ITEM_HEIGHT,
-  alignItems: "center",
-})
-
-const $userAvatar: ImageStyle = {
-  width: 60,
-  height: 60,
-  borderRadius: 30,
-  marginRight: 12,
-  flexShrink: 0,
-}
-
-const $userInfo: ViewStyle = {
-  flex: 1,
-  justifyContent: "center",
-  overflow: "hidden",
-}
-
-const $userName: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.text,
-  marginBottom: 4,
-})
-
-const $userEmail: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.textDim,
-  marginBottom: 4,
-})
-
-const $userMetaRow: ViewStyle = {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 8,
-}
-
-const $userMeta: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.textDim,
-  flexShrink: 1,
-})
-
-const $pressed: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  opacity: 0.7,
-  backgroundColor: colors.palette.neutral200,
 })
 
 const $centerContainer: ThemedStyle<ViewStyle> = () => ({
