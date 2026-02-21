@@ -44,3 +44,9 @@ export class Api {
 
 // Singleton instance of the API for convenience
 export const api = new Api()
+
+// Export new API service utilities
+export * from "./apiService"
+export * from "./userService"
+export * from "./userTypes"
+export * from "./apiProblem"
