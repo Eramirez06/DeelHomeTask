@@ -1,80 +1,61 @@
-# Welcome to your new ignited app!
+# DeelHomeTask
 
-> The latest and greatest boilerplate for Infinite Red opinions
-
-This is the boilerplate that [Infinite Red](https://infinite.red) uses as a way to test bleeding-edge changes to our React Native stack.
-
-- [Quick start documentation](https://github.com/infinitered/ignite/blob/master/docs/boilerplate/Boilerplate.md)
-- [Full documentation](https://github.com/infinitered/ignite/blob/master/docs/README.md)
-
-## Getting Started
+## How to run the app (iOS / Android)
 
 ```bash
-npm install --legacy-peer-deps
+npm install
+```
+
+```bash
+# iOS simulator
+npm run build:ios:sim
 npm run start
+npm run ios
 ```
-
-To make things work on your local simulator, or on your phone, you need first to [run `eas build`](https://github.com/infinitered/ignite/blob/master/docs/expo/EAS.md). We have many shortcuts on `package.json` to make it easier:
 
 ```bash
-npm run build:ios:sim # build for ios simulator
-npm run build:ios:device # build for ios device
-npm run build:ios:prod # build for ios device
+# Android emulator/device
+npm run build:android:sim
+npm run start
+npm run android
 ```
 
-### `./assets`
+## How to run unit/integration tests
 
-This directory is designed to organize and store various assets, making it easy for you to manage and use them in your application. The assets are further categorized into subdirectories, including `icons` and `images`:
-
-```tree
-assets
-├── icons
-└── images
+```bash
+npm test
 ```
 
-**icons**
-This is where your icon assets will live. These icons can be used for buttons, navigation elements, or any other UI components. The recommended format for icons is PNG, but other formats can be used as well.
-
-Ignite comes with a built-in `Icon` component. You can find detailed usage instructions in the [docs](https://github.com/infinitered/ignite/blob/master/docs/boilerplate/app/components/Icon.md).
-
-**images**
-This is where your images will live, such as background images, logos, or any other graphics. You can use various formats such as PNG, JPEG, or GIF for your images.
-
-Another valuable built-in component within Ignite is the `AutoImage` component. You can find detailed usage instructions in the [docs](https://github.com/infinitered/ignite/blob/master/docs/Components-AutoImage.md).
-
-How to use your `icon` or `image` assets:
-
-```typescript
-import { Image } from 'react-native';
-
-const MyComponent = () => {
-  return (
-    <Image source={require('assets/images/my_image.png')} />
-  );
-};
+```bash
+# Optional: run only specific suites
+npm test -- app/screens/HomeScreen/HomeScreen.test.tsx
+npm test -- app/utils/useUsers.test.ts
 ```
 
-## Running Maestro end-to-end tests
+## How to run E2E tests (Detox)
 
-Follow our [Maestro Setup](https://ignitecookbook.com/docs/recipes/MaestroSetup) recipe.
+```bash
+# iOS Debug (Expo Dev Client)
+npx expo start --dev-client --host localhost
+detox test --configuration ios.sim.debug
+```
 
-## Next Steps
+```bash
+# iOS Release
+detox test --configuration ios.sim.release
+```
 
-### Ignite Cookbook
+## Key decisions & tradeoffs
 
-[Ignite Cookbook](https://ignitecookbook.com/) is an easy way for developers to browse and share code snippets (or “recipes”) that actually work.
+- **Architecture:** Feature-based screen organization (`HomeScreen`, `DetailsScreen`) with reusable UI components and dedicated hooks for business logic.
+- **Data fetching:** Centralized API layer (`ApiService` + `userService`) to standardize request/response handling and errors.
+- **Search approach:** Debounced search (500ms) to reduce request volume and improve UX while typing.
+- **Scalability/performance:** FlatList tuning (`getItemLayout`, batching/window props, clipped subviews), memoized render callbacks, and pagination to avoid loading all users at once.
 
-### Upgrade Ignite boilerplate
+## What I would improve with more time
 
-Read our [Upgrade Guide](https://ignitecookbook.com/docs/recipes/UpdatingIgnite) to learn how to upgrade your Ignite project.
-
-## Community
-
-⭐️ Help us out by [starring on GitHub](https://github.com/infinitered/ignite), filing bug reports in [issues](https://github.com/infinitered/ignite/issues) or [ask questions](https://github.com/infinitered/ignite/discussions).
-
-💬 Join us on [Slack](https://join.slack.com/t/infiniteredcommunity/shared_invite/zt-1f137np4h-zPTq_CbaRFUOR_glUFs2UA) to discuss.
-
-📰 Make our Editor-in-chief happy by [reading the React Native Newsletter](https://reactnativenewsletter.com/).
-# DeelHomeTask
-# DeelHomeTask
-# DeelHomeTask
+- Add a reusable test utility layer for RTL and Detox (shared render helpers, selectors, and fixtures) to reduce test duplication.
+- Strengthen E2E reliability by running primarily on release builds and adding deterministic API stubs for critical flows.
+- Improve loading/search UX with skeleton states and clearer feedback for pagination/search transitions.
+- Add client-side caching (stale-while-revalidate) to reduce repeated network calls and improve perceived performance.
+- Introduce stricter API contract validation and analytics/error reporting hooks for better production observability.
