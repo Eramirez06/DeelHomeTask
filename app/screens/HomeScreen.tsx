@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   ImageStyle,
+  Pressable,
   RefreshControl,
   TextStyle,
   View,
@@ -19,6 +20,7 @@ import {
   EMPTY_STATE_NO_USERS,
   getSearchEmptyState,
 } from "@/constants/emptyStates"
+import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { User } from "@/services/api/userTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
@@ -26,33 +28,36 @@ import { useUsers } from "@/utils/useUsers"
 
 const ITEM_HEIGHT = 100
 
-const UserItem = memo<{ user: User }>(function UserItem({ user }) {
+const UserItem = memo<{ user: User; onPress: () => void }>(function UserItem({ user, onPress }) {
   const { themed } = useAppTheme()
 
   return (
-    <View style={themed($userItemContainer)}>
+    <Pressable
+      style={({ pressed }) => [themed($userItemContainer), pressed && themed($pressed)]}
+      onPress={onPress}
+    >
       <Image source={{ uri: user.image }} style={$userAvatar} />
       <View style={$userInfo}>
-        <Text style={themed($userName)} weight="semiBold">
+        <Text style={themed($userName)} weight="semiBold" numberOfLines={1} ellipsizeMode="tail">
           {user.firstName} {user.lastName}
         </Text>
-        <Text style={themed($userEmail)} size="sm">
+        <Text style={themed($userEmail)} size="sm" numberOfLines={1} ellipsizeMode="tail">
           {user.email}
         </Text>
         <View style={$userMetaRow}>
-          <Text style={themed($userMeta)} size="xs">
+          <Text style={themed($userMeta)} size="xs" numberOfLines={1} ellipsizeMode="tail">
             {user.role} • {user.age} years old
           </Text>
-          <Text style={themed($userMeta)} size="xs">
+          <Text style={themed($userMeta)} size="xs" numberOfLines={1} ellipsizeMode="tail">
             {user.company.department}
           </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   )
 })
 
-export const HomeScreen: FC = function HomeScreen() {
+export const HomeScreen: FC<AppStackScreenProps<"Home">> = function HomeScreen({ navigation }) {
   const { themed, theme } = useAppTheme()
   const {
     users,
@@ -74,7 +79,17 @@ export const HomeScreen: FC = function HomeScreen() {
     return <ActivityIndicator size="small" color={theme.colors.tint} style={$searchIndicator} />
   }, [isTyping, isSearching, theme.colors.tint])
 
-  const renderItem = useCallback(({ item }: { item: User }) => <UserItem user={item} />, [])
+  const handleUserPress = useCallback(
+    (userId: number) => {
+      navigation.navigate("Details", { userId })
+    },
+    [navigation],
+  )
+
+  const renderItem = useCallback(
+    ({ item }: { item: User }) => <UserItem user={item} onPress={() => handleUserPress(item.id)} />,
+    [handleUserPress],
+  )
 
   const keyExtractor = useCallback((item: User) => item.id.toString(), [])
 
@@ -234,11 +249,13 @@ const $userAvatar: ImageStyle = {
   height: 60,
   borderRadius: 30,
   marginRight: 12,
+  flexShrink: 0,
 }
 
 const $userInfo: ViewStyle = {
   flex: 1,
   justifyContent: "center",
+  overflow: "hidden",
 }
 
 const $userName: ThemedStyle<TextStyle> = ({ colors }) => ({
@@ -255,10 +272,17 @@ const $userMetaRow: ViewStyle = {
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
+  gap: 8,
 }
 
 const $userMeta: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
+  flexShrink: 1,
+})
+
+const $pressed: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  opacity: 0.7,
+  backgroundColor: colors.palette.neutral200,
 })
 
 const $centerContainer: ThemedStyle<ViewStyle> = () => ({

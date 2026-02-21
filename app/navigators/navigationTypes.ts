@@ -18,6 +18,7 @@ export type DemoTabParamList = {
 // App Stack Navigator types
 export type AppStackParamList = {
   Home: undefined
+  Details: { userId: number }
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
   // 🔥 Your screens go here

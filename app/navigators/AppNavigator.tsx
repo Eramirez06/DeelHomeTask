@@ -8,6 +8,7 @@ import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 import Config from "@/config"
+import { DetailsScreen } from "@/screens/DetailsScreen"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { useAppTheme } from "@/theme/context"
@@ -40,6 +41,15 @@ const AppStack = () => {
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen
+        name="Details"
+        component={DetailsScreen}
+        options={{
+          headerShown: true,
+          title: "User Details",
+          headerBackTitle: "Back",
+        }}
+      />
       {/** 🔥 Your screens go here */}
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>

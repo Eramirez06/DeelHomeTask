@@ -3,7 +3,7 @@
  * Handles all user-related API calls
  */
 import { ApiService, ApiResult } from "./apiService"
-import { UsersApiResponse } from "./userTypes"
+import { User, UsersApiResponse } from "./userTypes"
 
 // Create a dedicated instance for the DummyJSON API
 const userApiService = new ApiService({
@@ -31,8 +31,8 @@ export async function getUsersPaginated(
 /**
  * Get a single user by ID
  */
-export async function getUserById(id: number): Promise<ApiResult<UsersApiResponse>> {
-  return userApiService.get<UsersApiResponse>(`/users/${id}`)
+export async function getUserById(id: number): Promise<ApiResult<User>> {
+  return userApiService.get<User>(`/users/${id}`)
 }
 
 /**
